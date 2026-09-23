@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>Velour</title>
 <meta name="description" content="Онлайн-запись в ателье маникюра и бровей Velour">
+<!-- Скрипты можно грузить только отсюда и с telegram.org; плагины, подмена <base> и отправка форм на чужие адреса запрещены -->
+<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://telegram.org; object-src 'none'; base-uri 'none'; form-action 'none'">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -424,7 +426,7 @@ function viewHome(){
     <p class="tag">Ателье маникюра и бровей на Патриарших. Японские гели, одноразовые пилки и стерилизация инструментов класса B.</p>
     <div class="facts"><span><b>4,9</b> из 5 — 612 отзывов</span><span><b>10–21</b> без выходных</span></div>
   </header>
-  ${n ? `<button class="next" data-act="quick" data-day="${n.day}" data-t="${n.t}" data-m="${n.master}">
+  ${n ? `<button class="next" data-act="quick" data-day="${n.day}" data-t="${n.t}" data-m="${esc(n.master)}">
     <div><div class="k">Ближайшее окно на маникюр</div>
     <div class="v">${cap(dayLabel(n.day))}, ${hm(n.t)}</div>
     <div class="s">${esc(master(n.master).short)}, ${rub(priceOf(s0, master(n.master)))}</div></div>
@@ -434,7 +436,7 @@ function viewHome(){
     <div class="ctabs" role="tablist">
       ${CFG.cats.map(c => `<button class="ct" role="tab" data-act="cat" data-v="${esc(c)}" aria-selected="${c === S.cat}">${esc(c)}</button>`).join('')}
     </div>
-    ${list.map(s => `<button class="svc" data-act="service" data-v="${s.id}">
+    ${list.map(s => `<button class="svc" data-act="service" data-v="${esc(s.id)}">
       <div><div class="n">${esc(s.name)}</div><div class="d">${esc(s.note)}</div><div class="t">${durTxt(s.dur)}</div></div>
       <div class="p"><small>от</small>${rub(minPrice(s))}</div></button>`).join('')}
   </section>
@@ -464,7 +466,7 @@ function bar(title){
 function viewMaster(){
   const s = S.service;
   const row = (id, title, level, avaTxt, price, n) => `
-    <button class="m" data-act="master" data-v="${id}" aria-pressed="${S.master === id}">
+    <button class="m" data-act="master" data-v="${esc(id)}" aria-pressed="${S.master === id}">
       <div class="ava">${avaTxt}</div>
       <div><div class="n">${title}</div><div class="l">${level}</div>
       ${n ? `<div class="f">Свободна ${dayLabel(n.day)} с ${hm(n.t)}</div>` : `<div class="f no">Нет окон на две недели</div>`}</div>
@@ -494,7 +496,7 @@ function viewTime(){
   </div>
   ${slots.length ? `<div class="slots">${groups.map(([g,a,b]) => {
       const gs = slots.filter(x => x.t >= a && x.t < b);
-      return gs.length ? `<h3>${g}</h3><div class="grid">${gs.map(x => `<button class="slot" data-act="time" data-v="${x.t}" data-m="${x.master}" aria-pressed="${S.time === x.t}">${hm(x.t)}</button>`).join('')}</div>` : '';
+      return gs.length ? `<h3>${g}</h3><div class="grid">${gs.map(x => `<button class="slot" data-act="time" data-v="${x.t}" data-m="${esc(x.master)}" aria-pressed="${S.time === x.t}">${hm(x.t)}</button>`).join('')}</div>` : '';
     }).join('')}</div>`
   : `<div class="empty"><b>${cap(dayLabel(S.day))} окон нет</b>Посмотрите ближайший свободный день.<br><button data-act="jump">Показать</button></div>`}`;
 }
@@ -571,8 +573,8 @@ function viewMine(){
       <div class="dd"><div class="n">${d.getUTCDate()}</div><div class="m">${fmt(d,{month:'short'}).replace('.','')}, ${fmt(d,{weekday:'short'}).replace('.','')}</div></div>
       <div><div class="t">${hm(b.start)}${label}</div><div class="s">${esc(b.serviceName)}</div>
       <div class="x">${esc(m ? m.short : '')}, ${rub(b.price)}</div>
-      ${past ? (b.status !== 'cancelled' ? `<div class="row"><button data-act="again" data-v="${b.id}">Снова к ${esc(m ? m.dat : 'мастеру')}</button></div>` : '')
-             : `<div class="row"><button data-act="resched" data-v="${b.id}">Перенести</button><button data-act="cancel" data-v="${b.id}">Отменить</button></div>`}
+      ${past ? (b.status !== 'cancelled' ? `<div class="row"><button data-act="again" data-v="${esc(b.id)}">Снова к ${esc(m ? m.dat : 'мастеру')}</button></div>` : '')
+             : `<div class="row"><button data-act="resched" data-v="${esc(b.id)}">Перенести</button><button data-act="cancel" data-v="${esc(b.id)}">Отменить</button></div>`}
       </div></div>`;
   };
   if (!up.length && !rest.length) return `<div class="ph"><h1>Мои записи</h1></div>
